@@ -32,7 +32,7 @@ function authMiddleware(socket, next) {
 function initSocket(httpServer) {
   const io = new Server(httpServer, {
     cors: {
-      origin: process.env.CLIENT_URL || 'http://localhost:3000',
+      origin: process.env.CLIENT_URL || 'https://calm-space-eight.vercel.app',
       credentials: true,
     },
     transports: ['websocket', 'polling'],
