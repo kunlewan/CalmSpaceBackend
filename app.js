@@ -38,7 +38,7 @@ app.use(rateLimit({
 }));
 
 app.use(cors({
-  origin: 'http://localhost:3000',     
+  origin: 'https://calm-space-eight.vercel.app/',     
   credentials: true,                   
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
