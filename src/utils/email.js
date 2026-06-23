@@ -4,10 +4,11 @@ import { google } from 'googleapis';
 const OAuth2 = google.auth.OAuth2;
 
 export const sendVerificationEmail = async (toEmail, code) => {
+  const redirectUri = process.env.OAUTH_REDIRECT_URI || 'https://developers.google.com/oauthplayground';
   const oauth2Client = new OAuth2(
     process.env.CLIENT_ID,
     process.env.CLIENT_SECRET,
-    'https://developers.google.com/oauthplayground'
+    redirectUri
   );
 
   oauth2Client.setCredentials({
