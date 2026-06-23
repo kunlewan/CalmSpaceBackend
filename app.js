@@ -17,6 +17,8 @@ import { csrfMiddleware, getCsrfToken } from './src/middlewares/csrfMiddleware.j
 
 const app = express();
 
+app.set('trust proxy', 1);
+
 // === SECURITY ===
 app.use(helmet({
   contentSecurityPolicy: {
