@@ -17,6 +17,7 @@ import {
   verifyJWT,
   verifyRefreshToken,
 } from '../middlewares/authMiddleware.js';
+import {sendVerificationEmail} from '../utils/email.js';
 
 // import {sendReceiptEmail} from '../utils/receipt.js';
 
@@ -49,4 +50,22 @@ router.put('/preferences', verifyJWT, updateInterestsAndGoals)  // correct spell
 //     res.status(500).json({ message: 'Failed to send receipt email' });
 //   }
 // });
+// Add to your main router file temporarily
+router.get('/test-email', async (req, res) => {
+  try {
+    console.log('📧 EMAIL_USER:', process.env.EMAIL_USER);
+    console.log('📧 APP_PASSWORD exists:', !!process.env.GMAIL_APP_PASSWORD);
+    console.log('📧 APP_PASSWORD length:', process.env.GMAIL_APP_PASSWORD?.length);
+    
+    await sendVerificationEmail(process.env.EMAIL_USER, '123456');
+    res.json({ success: true });
+  } catch (err) {
+    console.error('❌ FULL ERROR:', err);
+    res.status(500).json({ 
+      success: false, 
+      error: err.message,
+      code: err.code
+    });
+  }
+});
 export default router;
