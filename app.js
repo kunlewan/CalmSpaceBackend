@@ -37,10 +37,23 @@ app.use(rateLimit({
   skip: (req, res) => process.env.NODE_ENV === 'development',
 }));
 
+const allowedOrigins = [
+  'https://calm-space-eight.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000',
+];
+
 app.use(cors({
-  origin: 'https://calm-space-eight.vercel.app',     
-  credentials: true,                   
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  origin: (origin, callback) => {
+    // Allow Postman (no origin) + allowed list
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));
 
