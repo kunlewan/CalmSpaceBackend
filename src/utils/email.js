@@ -60,6 +60,9 @@ import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
   service: 'gmail',
+  host: 'smtp.gmail.com', // Explicitly set host
+  port: 465,              // Secure port
+  secure: true,           // Use SSL
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.GMAIL_APP_PASSWORD,
@@ -67,22 +70,33 @@ const transporter = nodemailer.createTransport({
 });
 
 export const sendVerificationEmail = async (toEmail, code) => {
-  const result = await transporter.sendMail({
-    from:    `"CalmSpace" <${process.env.EMAIL_USER}>`,
-    to:      toEmail,
-    subject: 'CalmSpace — Your Verification Code',
-    html: `
-      <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px">
-        <h2 style="color:#4f46e5">Welcome to CalmSpace 🌿</h2>
-        <p>Use the code below to verify your email address:</p>
-        <div style="font-size:36px;font-weight:bold;letter-spacing:8px;color:#4f46e5;padding:16px 0">
-          ${code}
-        </div>
-        <p style="color:#6b7280;font-size:14px">This code expires in 15 minutes.</p>
-      </div>
-    `,
-  });
+  try {
+    // 1. Verify connection configuration before sending
+    await transporter.verify();
+    console.log('📬 SMTP server is ready to take our messages');
 
-  console.log('✅ Verification email sent:', result.messageId);
-  return result;
+    // 2. Attempt to send the mail
+    const result = await transporter.sendMail({
+      from:    `"CalmSpace" <${process.env.EMAIL_USER}>`,
+      to:      toEmail,
+      subject: 'CalmSpace — Your Verification Code',
+      html: `
+        <div style="font-family:sans-serif;max-width:480px;margin:0 auto;padding:32px">
+          <h2 style="color:#4f46e5">Welcome to CalmSpace 🌿</h2>
+          <p>Use the code below to verify your email address:</p>
+          <div style="font-size:36px;font-weight:bold;letter-spacing:8px;color:#4f46e5;padding:16px 0">
+            ${code}
+          </div>
+          <p style="color:#6b7280;font-size:14px">This code expires in 15 minutes.</p>
+        </div>
+      `,
+    });
+
+    console.log('✅ Verification email sent:', result.messageId);
+    return result;
+  } catch (error) {
+    // This will force Railway to print the exact reason it failed
+    console.error('❌ Nodemailer Error on Railway:', error);
+    throw error; 
+  }
 };
